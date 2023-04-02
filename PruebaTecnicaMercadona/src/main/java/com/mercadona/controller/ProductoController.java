@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mercadona.exceptions.IncorrectCodeException;
+import com.mercadona.exceptions.IncorrectFormatCodeException;
 import com.mercadona.model.Producto;
 import com.mercadona.service.ProductoService;
 
@@ -24,7 +26,7 @@ public class ProductoController {
 
 
 	@GetMapping("/{codigoProducto}")
-    public Producto getProductoByCodigo(@PathVariable Integer codigoProducto) {
+    public Producto getProductoByCodigo(@PathVariable Integer codigoProducto) throws IncorrectCodeException, IncorrectFormatCodeException {
         return productoService.getProducto(codigoProducto);
     }
 }
