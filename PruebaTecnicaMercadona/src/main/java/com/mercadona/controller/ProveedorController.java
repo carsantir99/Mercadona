@@ -1,6 +1,7 @@
 package com.mercadona.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,5 +46,10 @@ public class ProveedorController {
 	@PutMapping("/edit")
     public Proveedor editarProveedor(@RequestParam Integer codigo, @RequestParam String nombre) throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, DuplicatedCodeException, IncorrectCodeException {
 		return proveedorService.actualizarProveedor(codigo,nombre);
+    }
+	
+	@DeleteMapping("/delete/{codigoProveedor}")
+    public void eliminarProveedor(@PathVariable Integer codigoProveedor) throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, DuplicatedCodeException, IncorrectCodeException {
+		proveedorService.eliminarProveedor(codigoProveedor);
     }
 }

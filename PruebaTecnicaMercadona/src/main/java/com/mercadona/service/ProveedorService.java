@@ -13,6 +13,7 @@ import com.mercadona.exceptions.IncorrectFormatCodeException;
 import com.mercadona.model.Proveedor;
 import com.mercadona.model.Proveedor;
 import com.mercadona.model.Proveedor;
+import com.mercadona.model.Proveedor;
 import com.mercadona.repository.ProveedorRepository;
 
 
@@ -59,6 +60,25 @@ public class ProveedorService {
 			  proveedorExistente.setNombre(proveedor.getNombre());
 			  return proveedorRepository.save(proveedorExistente);  
 		  }
+
+		 
+	  }
+	  
+	  public void eliminarProveedor(Integer codigo) throws IncorrectCodeException, EmptyCodeException, IncorrectFormatCodeException {
+			if(codigo!=null) {
+			if(((int) Math.log10(codigo) + 1)==7){
+				  Proveedor proveedorExistente =  proveedorRepository.getProveedor(codigo);
+				  if(proveedorExistente==null) {
+					  throw new IncorrectCodeException();
+				  }else {
+					  proveedorRepository.delete(proveedorExistente);
+				  }
+			}else {
+				throw new IncorrectFormatCodeException();
+			}
+			}else {
+				throw new EmptyCodeException();
+			}
 
 		 
 	  }

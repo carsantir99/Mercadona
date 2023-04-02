@@ -20,7 +20,9 @@ import com.mercadona.exceptions.IncorrectCodeException;
 import com.mercadona.exceptions.IncorrectFormatCodeException;
 import com.mercadona.model.Proveedor;
 import com.mercadona.model.Proveedor;
+import com.mercadona.model.Proveedor;
 import com.mercadona.repository.ProveedorRepository;
+import com.mercadona.service.ProveedorService;
 import com.mercadona.service.ProveedorService;
 import com.mercadona.service.ProveedorService;
 
@@ -127,5 +129,37 @@ public class ProveedorTests {
 		    doThrow(new IncorrectCodeException()).when(proveedorService).actualizarProveedor(proveedor.getCodigo(), proveedor.getNombre());
 		        
 		    assertThrows(IncorrectCodeException.class, () -> proveedorService.actualizarProveedor(proveedor.getCodigo(), proveedor.getNombre()));
+		}
+		
+		@Test
+		public void testEliminarProveedorCorrecto() throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, IncorrectCodeException {
+			Integer codigoProveedor = 1234567;
+			Proveedor proveedor = new Proveedor(codigoProveedor, "Proveedor externo 1");
+			
+			when(proveedorRepository.getProveedor(codigoProveedor)).thenReturn(proveedor);
+	        
+	        proveedorService.eliminarProveedor(codigoProveedor);
+
+	        Mockito.verify(proveedorRepository).delete(proveedor);
+		}
+		
+		@Test
+		public void testEliminarProveedorCodigoNoExistente() throws IncorrectCodeException, EmptyCodeException, IncorrectFormatCodeException  {
+			Integer codigoProveedor = 1234566;
+			proveedorService = mock(ProveedorService.class);
+			
+		    doThrow(new IncorrectCodeException()).when(proveedorService).eliminarProveedor(codigoProveedor);
+		        
+		    assertThrows(IncorrectCodeException.class, () -> proveedorService.eliminarProveedor(codigoProveedor));
+		}
+		
+		@Test
+		public void testEliminarProveedorFormatoIncorrecto() throws IncorrectCodeException, EmptyCodeException, IncorrectFormatCodeException  {
+			Integer codigoProveedor = 123456789;
+			proveedorService = mock(ProveedorService.class);
+			
+		    doThrow(new IncorrectFormatCodeException()).when(proveedorService).eliminarProveedor(codigoProveedor);
+		        
+		    assertThrows(IncorrectFormatCodeException.class, () -> proveedorService.eliminarProveedor(codigoProveedor));
 		}
 }
