@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -74,9 +75,9 @@ public class ProductoTests {
 		Producto producto = new Producto(12346,"Leche");
 		productoService = mock(ProductoService.class);
 		
-		when(productoService.creaProducto(producto)).thenReturn(producto);
+		when(productoService.creaProducto(producto.getCodigo(), producto.getNombre())).thenReturn(producto);
 		
-		Producto productoCreado = productoService.creaProducto(producto);
+		Producto productoCreado = productoService.creaProducto(producto.getCodigo(), producto.getNombre());
 		
 		assertEquals(producto,productoCreado);
 	}
@@ -86,26 +87,51 @@ public class ProductoTests {
 		Producto producto = new Producto(12346,"Leche");
 		productoService = mock(ProductoService.class);
 		
-		when(productoService.creaProducto(producto)).thenThrow(new DuplicatedCodeException());
+		when(productoService.creaProducto(producto.getCodigo(), producto.getNombre())).thenThrow(new DuplicatedCodeException());
 		
 		
-		 assertThrows(DuplicatedCodeException.class, () -> productoService.creaProducto(producto));
+		 assertThrows(DuplicatedCodeException.class, () -> productoService.creaProducto(producto.getCodigo(), producto.getNombre()));
 	}
 	
 	@Test
-	public void testCrearProductoFormatoIncorrecto() throws IncorrectFormatCodeException {
+	public void testProductoFormatoIncorrecto() throws IncorrectFormatCodeException {
 		
 		assertThrows(IncorrectFormatCodeException.class,() -> new Producto(123466,"Leche"));
 	}
 	
 	@Test
-	public void testCrearProductoCampoCodigoVacio() throws EmptyCodeException {
+	public void testProductoCampoCodigoVacio() throws EmptyCodeException {
 		assertThrows(EmptyCodeException.class,() -> new Producto(null,"Leche"));
 	}
 	
 	@Test
-	public void testCrearProductoCampoNombreVacio() throws EmptyNameException {
+	public void testProductoCampoNombreVacio() throws EmptyNameException {
 		assertThrows(EmptyNameException.class,() -> new Producto(12347,""));
+	}
+	
+	@Test
+	public void testEditarProductoCorrecto() throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, IncorrectCodeException {
+		Producto productoActual = new Producto(12345, "Margarina");
+
+		when(productoRepository.getProducto(12345)).thenReturn(productoActual);
+
+		Producto productoNuevo = new Producto(12345, "Azúcar");
+
+        productoService.actualizarProducto(productoNuevo.getCodigo(), productoNuevo.getNombre());
+
+        productoRepository.save(productoActual);
+        assertEquals(productoNuevo.getCodigo(), productoActual.getCodigo());
+        assertEquals(productoNuevo.getNombre(),productoActual.getNombre());
+	}
+	
+	@Test
+	public void testEditarProductoCodigoNoExistente() throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, IncorrectCodeException {
+		Producto producto = new Producto(99999, "Galletas");
+		productoService = mock(ProductoService.class);
+		
+	    doThrow(new IncorrectCodeException()).when(productoService).actualizarProducto(producto.getCodigo(), producto.getNombre());
+	        
+	    assertThrows(IncorrectCodeException.class, () -> productoService.actualizarProducto(producto.getCodigo(), producto.getNombre()));
 	}
 	
 }

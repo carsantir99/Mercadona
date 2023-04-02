@@ -37,7 +37,11 @@ public class ProductoController {
 	
 	@PostMapping("/create")
     public Producto crearProducto(@RequestParam Integer codigo, @RequestParam String nombre) throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, DuplicatedCodeException {
-		Producto producto = new Producto(codigo,nombre);
-		return productoService.creaProducto(producto);
+		return productoService.creaProducto(codigo,nombre);
+    }
+	
+	@PostMapping("/edit")
+    public Producto editarProducto(@RequestParam Integer codigo, @RequestParam String nombre) throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, DuplicatedCodeException, IncorrectCodeException {
+		return productoService.actualizarProducto(codigo,nombre);
     }
 }
