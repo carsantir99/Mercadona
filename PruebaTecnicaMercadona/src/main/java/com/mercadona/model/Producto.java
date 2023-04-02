@@ -2,6 +2,10 @@ package com.mercadona.model;
 
 
 
+import com.mercadona.exceptions.EmptyCodeException;
+import com.mercadona.exceptions.EmptyNameException;
+import com.mercadona.exceptions.IncorrectFormatCodeException;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,14 +25,27 @@ public class Producto {
 	private String nombre;
 	
 	
-	
 	public Producto() {
 		
 	}
 	
-	public Producto(Integer codigo, String nombre) {
-		this.codigo = codigo;
-		this.nombre = nombre;
+	public Producto(Integer codigo, String nombre) throws IncorrectFormatCodeException,EmptyCodeException, EmptyNameException {
+		if(codigo!=null) {
+		if(((int) Math.log10(codigo) + 1)==5){
+			this.codigo = codigo;
+		}else {
+			throw new IncorrectFormatCodeException();
+		}
+		}else {
+			throw new EmptyCodeException();
+		}
+		
+		if(nombre==null || nombre.equals("")) {
+			throw new EmptyNameException();
+		}else {
+			this.nombre = nombre;
+		}
+		
 	}
 	
 	public Integer getCodigo() {

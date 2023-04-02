@@ -3,6 +3,7 @@ package com.mercadona.service;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.mercadona.exceptions.DuplicatedCodeException;
 import com.mercadona.exceptions.IncorrectCodeException;
 import com.mercadona.exceptions.IncorrectFormatCodeException;
 import com.mercadona.model.Producto;
@@ -30,6 +31,14 @@ public class ProductoService {
 		  throw new IncorrectFormatCodeException();
 	  }
 	  }
-  
+  public Producto creaProducto(Producto producto) throws DuplicatedCodeException {
+	  Producto productoExistente =  productoRepository.getProducto(producto.getCodigo());
+	  if(productoExistente==null) {
+		  return productoRepository.save(producto);
+	  }else {
+		  throw new DuplicatedCodeException();
+	  }
+	 
+  }
   
 }
