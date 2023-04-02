@@ -19,7 +19,9 @@ import com.mercadona.exceptions.EmptyNameException;
 import com.mercadona.exceptions.IncorrectCodeException;
 import com.mercadona.exceptions.IncorrectFormatCodeException;
 import com.mercadona.model.Proveedor;
+import com.mercadona.model.Proveedor;
 import com.mercadona.repository.ProveedorRepository;
+import com.mercadona.service.ProveedorService;
 import com.mercadona.service.ProveedorService;
 
 
@@ -100,5 +102,30 @@ public class ProveedorTests {
 		@Test
 		public void testProveedorCampoNombreVacio() throws EmptyNameException {
 			assertThrows(EmptyNameException.class,() -> new Proveedor(1234567,""));
+		}
+		
+		@Test
+		public void testEditarProveedorCorrecto() throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, IncorrectCodeException {
+			Proveedor proveedorActual = new Proveedor(1234567, "Proveedor externo 1");
+
+			when(proveedorRepository.getProveedor(1234567)).thenReturn(proveedorActual);
+
+			Proveedor proveedorNuevo = new Proveedor(1234567, "Proveedor externo 2");
+
+	        proveedorService.actualizarProveedor(proveedorNuevo.getCodigo(), proveedorNuevo.getNombre());
+
+	        proveedorRepository.save(proveedorActual);
+	        assertEquals(proveedorNuevo.getCodigo(), proveedorActual.getCodigo());
+	        assertEquals(proveedorNuevo.getNombre(),proveedorActual.getNombre());
+		}
+		
+		@Test
+		public void testEditarProveedorCodigoNoExistente() throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, IncorrectCodeException {
+			Proveedor proveedor = new Proveedor(1234567, "Galletas");
+			proveedorService = mock(ProveedorService.class);
+			
+		    doThrow(new IncorrectCodeException()).when(proveedorService).actualizarProveedor(proveedor.getCodigo(), proveedor.getNombre());
+		        
+		    assertThrows(IncorrectCodeException.class, () -> proveedorService.actualizarProveedor(proveedor.getCodigo(), proveedor.getNombre()));
 		}
 }
