@@ -43,7 +43,7 @@ public class ProductoTests {
 		Producto productoObject = new Producto(codigoProducto, "Margarina");
 		when(productoRepository.getProducto(codigoProducto)).thenReturn(productoObject);
 		
-		Producto productoActual = productoService.getProducto(12345);
+		Producto productoActual = productoService.getProducto(codigoProducto);
 		
 		assertEquals(productoObject,productoActual);
 		
