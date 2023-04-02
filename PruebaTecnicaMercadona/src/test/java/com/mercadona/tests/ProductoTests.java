@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,7 +36,6 @@ public class ProductoTests {
     private ProductoRepository productoRepository;
 	@InjectMocks
     private ProductoService productoService;
-	private Validator validator;
     
 	@Test
 	public void testConsultaProductoCorrecta() throws IncorrectCodeException, IncorrectFormatCodeException, EmptyCodeException, EmptyNameException {
@@ -132,6 +132,38 @@ public class ProductoTests {
 	    doThrow(new IncorrectCodeException()).when(productoService).actualizarProducto(producto.getCodigo(), producto.getNombre());
 	        
 	    assertThrows(IncorrectCodeException.class, () -> productoService.actualizarProducto(producto.getCodigo(), producto.getNombre()));
+	}
+	
+	@Test
+	public void testEliminarProductoCorrecto() throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, IncorrectCodeException {
+		Integer codigoProducto = 12344;
+		Producto producto = new Producto(codigoProducto, "Galletas");
+		
+		when(productoRepository.getProducto(codigoProducto)).thenReturn(producto);
+        
+        productoService.eliminarProducto(codigoProducto);
+
+        Mockito.verify(productoRepository).delete(producto);
+	}
+	
+	@Test
+	public void testEliminarProductoCodigoNoExistente() throws IncorrectCodeException, EmptyCodeException, IncorrectFormatCodeException  {
+		Integer codigoProducto = 99999;
+		productoService = mock(ProductoService.class);
+		
+	    doThrow(new IncorrectCodeException()).when(productoService).eliminarProducto(codigoProducto);
+	        
+	    assertThrows(IncorrectCodeException.class, () -> productoService.eliminarProducto(codigoProducto));
+	}
+	
+	@Test
+	public void testEliminarProductoFormatoIncorrecto() throws IncorrectCodeException, EmptyCodeException, IncorrectFormatCodeException  {
+		Integer codigoProducto = 123456;
+		productoService = mock(ProductoService.class);
+		
+	    doThrow(new IncorrectFormatCodeException()).when(productoService).eliminarProducto(codigoProducto);
+	        
+	    assertThrows(IncorrectFormatCodeException.class, () -> productoService.eliminarProducto(codigoProducto));
 	}
 	
 }

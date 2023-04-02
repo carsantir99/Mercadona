@@ -1,5 +1,6 @@
 package com.mercadona.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,10 @@ import com.mercadona.repository.ProductoRepository;
 @Service
 public class ProductoService {
 	
+	  
 	  private final ProductoRepository productoRepository;
 	  
+	  @Autowired
 	  public ProductoService(ProductoRepository productoRepository) {
 	    this.productoRepository = productoRepository;
 	  }
@@ -54,6 +57,25 @@ public class ProductoService {
 		  productoExistente.setNombre(producto.getNombre());
 		  return productoRepository.save(productoExistente);  
 	  }
+
+	 
+  }
+  
+  public void eliminarProducto(Integer codigo) throws IncorrectCodeException, EmptyCodeException, IncorrectFormatCodeException {
+		if(codigo!=null) {
+		if(((int) Math.log10(codigo) + 1)==5){
+			  Producto productoExistente =  productoRepository.getProducto(codigo);
+			  if(productoExistente==null) {
+				  throw new IncorrectCodeException();
+			  }else {
+				  productoRepository.delete(productoExistente);
+			  }
+		}else {
+			throw new IncorrectFormatCodeException();
+		}
+		}else {
+			throw new EmptyCodeException();
+		}
 
 	 
   }
