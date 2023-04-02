@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.mercadona.exceptions.DuplicatedCodeException;
 import com.mercadona.exceptions.EmptyCodeException;
 import com.mercadona.exceptions.EmptyNameException;
 import com.mercadona.exceptions.IncorrectCodeException;
@@ -61,4 +62,43 @@ public class ProveedorTests {
 	        
 	    assertThrows(IncorrectFormatCodeException.class, () -> proveedorService.getProveedor(codigoProveedor));
 	}
+	
+	 @Test
+		public void testCrearProveedorCorrecto() throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, DuplicatedCodeException {
+			Proveedor proveedor = new Proveedor(1234567,"Proveedor externo");
+			proveedorService = mock(ProveedorService.class);
+			
+			when(proveedorService.creaProveedor(proveedor.getCodigo(), proveedor.getNombre())).thenReturn(proveedor);
+			
+			Proveedor proveedorCreado = proveedorService.creaProveedor(proveedor.getCodigo(), proveedor.getNombre());
+			
+			assertEquals(proveedor,proveedorCreado);
+		}
+		
+		@Test
+		public void testCrearProveedorCodigoDuplicado() throws IncorrectFormatCodeException, EmptyCodeException, EmptyNameException, DuplicatedCodeException {
+			Proveedor proveedor = new Proveedor(1234567,"Proveedor externo");
+			proveedorService = mock(ProveedorService.class);
+			
+			when(proveedorService.creaProveedor(proveedor.getCodigo(), proveedor.getNombre())).thenThrow(new DuplicatedCodeException());
+			
+			
+			 assertThrows(DuplicatedCodeException.class, () -> proveedorService.creaProveedor(proveedor.getCodigo(), proveedor.getNombre()));
+		}
+		
+		@Test
+		public void testProveedorFormatoIncorrecto() throws IncorrectFormatCodeException {
+			
+			assertThrows(IncorrectFormatCodeException.class,() -> new Proveedor(12345677,"Proveedor externo"));
+		}
+		
+		@Test
+		public void testProveedorCampoCodigoVacio() throws EmptyCodeException {
+			assertThrows(EmptyCodeException.class,() -> new Proveedor(null,"Proveedor externo"));
+		}
+		
+		@Test
+		public void testProveedorCampoNombreVacio() throws EmptyNameException {
+			assertThrows(EmptyNameException.class,() -> new Proveedor(1234567,""));
+		}
 }

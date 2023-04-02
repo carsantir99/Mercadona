@@ -1,12 +1,16 @@
 package com.mercadona.service;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.mercadona.exceptions.DuplicatedCodeException;
+import com.mercadona.exceptions.EmptyCodeException;
+import com.mercadona.exceptions.EmptyNameException;
 import com.mercadona.exceptions.IncorrectCodeException;
 import com.mercadona.exceptions.IncorrectFormatCodeException;
-import com.mercadona.model.Producto;
+import com.mercadona.model.Proveedor;
 import com.mercadona.model.Proveedor;
 import com.mercadona.repository.ProveedorRepository;
 
@@ -33,4 +37,17 @@ public class ProveedorService {
 			  throw new IncorrectFormatCodeException();
 		  }
 		  }
+	  
+	  public Proveedor creaProveedor(Integer codigo, String nombre) throws DuplicatedCodeException, IncorrectFormatCodeException, EmptyCodeException, EmptyNameException {
+		  Proveedor proveedor = new Proveedor(codigo,nombre);
+		  Proveedor proveedorExistente =  proveedorRepository.getProveedor(proveedor.getCodigo());
+		  if(proveedorExistente==null) {
+			  return proveedorRepository.save(proveedor);
+		  }else {
+			  throw new DuplicatedCodeException();
+		  }
+		 
+	  }
+	  
+	 
 }
